@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useRef } from "react";
 import axios from "axios";
 import type { Country } from "../types/country.ts";
 import CountryList from './CountryList.tsx';
@@ -9,17 +9,18 @@ const Bai1: React.FC = () => {
     const [countries, setCountries] = useState<Country[]>([]);
     const [search, setSearch] = useState("");
     const [loading, setLoading] = useState(true);
-
+    
     const navigate = useNavigate();
+    const dataFetchedRef = useRef(false);
 
-    useEffect(() => {
-        setLoading(true);
+    if (!dataFetchedRef.current) {
+        dataFetchedRef.current = true;
         axios
             .get<Country[]>("https://restcountries.com/v3.1/all?fields=name,flags,population,region")
             .then((res) => setCountries(res.data))
             .catch((err) => console.error("Lỗi tải dữ liệu quốc gia:", err))
             .finally(() => setLoading(false));
-    }, []);
+    }
 
     const filteredCountries = countries.filter((c) =>
         c.name.common.toLowerCase().includes(search.toLowerCase())
